@@ -1,3 +1,5 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/77f94183-2907-427a-964f-f47486b4b166/deploy-status)](https://app.netlify.com/sites/cs3216-timeline/deploys)
+
 # Timeline
 
 **CS3216 Assignment 3**
@@ -21,7 +23,7 @@
 3. Chan Qin Liang A0208035N
    - Backend Development
    - Report
-4. Marcus Ng A0194088R
+4. Marcus A0194088R
    - Frontend Development
    - Report
 
