@@ -5,7 +5,7 @@
 **CS3216 Assignment 3**
 
 <p align="center">
-  <img src="frontend/public/logo512.png" alt="Timeline logo"/>
+  <img src="frontend/public/logo192.png" alt="Timeline logo"/>
 </p>
 
 ### The place to save your best moments, milestones, and memories.
