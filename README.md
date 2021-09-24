@@ -10,6 +10,10 @@
 
 ### The place to save your best moments, milestones, and memories.
 
+## Try it out here
+
+https://cs3216-timeline.netlify.app/
+
 ## Created by
 
 1. Ang Chun Yang A0180311X
@@ -27,6 +31,4 @@
    - Frontend Development
    - Report
 
-## Try it out here
 
-https://cs3216-timeline.netlify.app/
