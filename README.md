@@ -1,12 +1,14 @@
 # Timeline
 
-CS3216 Assignment 3
+**CS3216 Assignment 3**
 
 <p align="center">
   <img src="frontend/public/logo512.png" alt="Timeline logo"/>
 </p>
 
-## Created by:
+### The place to save your best moments, milestones, and memories.
+
+## Created by
 
 1. Ang Chun Yang A0180311X
 
@@ -23,6 +25,6 @@ CS3216 Assignment 3
    - Frontend Development
    - Report
 
-## Try it out here:
+## Try it out here
 
 https://cs3216-timeline.netlify.app/
