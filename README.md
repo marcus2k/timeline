@@ -2,7 +2,9 @@
 
 CS3216 Assignment 3
 
-![Timeline logo](frontend/public/logo512.png)
+<p align="center">
+  <img src="frontend/public/logo512.png" alt="Timeline logo"/>
+</p>
 
 ## Created by:
 
