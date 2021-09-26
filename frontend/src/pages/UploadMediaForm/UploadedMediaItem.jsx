@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { makeStyles, Grid, Box, IconButton } from "@material-ui/core";
-// import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { COLORS } from "../../utils/colors";
 import DeleteMediaDialog from "./DeleteMediaDialog";
-import Loading from "../../components/Loading";
+import { ClipLoader } from "react-spinners";
+import NotFoundImage from "../../assets/not-found.png";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,23 +52,31 @@ const UploadedMediaItem = ({
   return (
     <>
       {loading ? (
-        <Loading />
+        <Grid item xs={3} className={classes.root}>
+          <p>Deleting</p>
+          <ClipLoader color={COLORS.PRIMARY_PURPLE} loading={true} size={20} />
+        </Grid>
       ) : (
         <Grid item xs={3} className={classes.root}>
           <Box position="relative">
-            { isDeletable &&
+            {isDeletable && (
               <Box className={classes.deleteButtonContainer}>
                 <IconButton onClick={() => setDisplayDeleteDialog(true)}>
                   <DeleteIcon className={classes.iconStyle} />
                 </IconButton>
               </Box>
-            }
-            <img 
-              onClick={() => setMediaPreview(media.position)} 
-              className={isSelected ? classes.selectedImage : classes.image} 
-              src={media.url} 
-              alt={"uploaded media"} 
-            />
+            )}
+            <Box onClick={() => setMediaPreview(media.position)}>
+              <img
+                className={isSelected ? classes.selectedImage : classes.image}
+                src={media.url}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = NotFoundImage;
+                }}
+                alt={"uploaded media"}
+              />
+            </Box>
           </Box>
         </Grid>
       )}

@@ -8,12 +8,14 @@ import { COLORS } from "../../utils/colors";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  addMemoriesOfDateToStore,
   getDatesWithMemoriesByMonthAndYear,
   setChosenDate,
 } from "../../actions/calendar";
-import { getMemoriesByDate } from "../../services/calendarService";
 import MemoryCard from "./MemoryCard";
 import { convertUTCtoDate } from "../../utils/datetime";
+import { setAlert } from "../../actions/alert";
+import { getMemoriesByDate } from "../../services/calendarService";
 
 const useStyles = makeStyles((theme) => ({
   calendar: {
@@ -24,49 +26,63 @@ const useStyles = makeStyles((theme) => ({
   highlight: {
     backgroundColor: COLORS.PRIMARY_PURPLE,
   },
+  todayIcon: {
+    fontSize: "30pt", 
+    color: COLORS.PRIMARY_PURPLE
+  },
 }));
 
 const MemoriesCalendar = () => {
   const classes = useStyles();
-  // eslint-disable-next-line no-unused-vars
-  // const [selectedDay, setSelectedDay] = useState(new Date().getUTCDate());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getUTCMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getUTCFullYear());
-  const [memoriesOfSelectedDate, setMemoriesOfSelectedDate] = useState([]);
   const dispatch = useDispatch();
   const markedDates = useSelector((state) => state.calendar.markedDates);
   const selectedDate = useSelector((state) => state.calendar.selectedDate);
+  const memoriesByDate = useSelector((state) => state.calendar.memoriesByDate);
 
   const onYearOrMonthChange = (newDate) => {
-    // setSelectedDay(newDate.getUTCDate());
-    setSelectedMonth(newDate.getUTCMonth());
+    setSelectedMonth(newDate.getMonth());
     setSelectedYear(newDate.getUTCFullYear());
   };
 
   const onDateChange = async (newDate) => {
-    // setSelectedDay(newDate.getUTCDate());
-    // setSelectedMonth(newDate.getUTCMonth());
-    // setSelectedYear(newDate.getUTCFullYear());
     dispatch(setChosenDate(newDate));
-    const memories = await getMemoriesByDate(newDate);
-    setMemoriesOfSelectedDate(memories);
+    setSelectedMonth(newDate.getMonth());
+    setSelectedYear(newDate.getUTCFullYear());
   };
 
   // const mark = ["06-09-2021", "07-09-2021", "09-09-2021"];
 
   useEffect(() => {
     dispatch(getDatesWithMemoriesByMonthAndYear(selectedMonth, selectedYear));
-  }, [selectedMonth, selectedYear, dispatch]);
+  }, [dispatch, selectedMonth, selectedYear]);
 
+  useEffect(() => {
+    const getMemoriesBySelectedDate = async () => {
+      try {
+        const memories = await getMemoriesByDate(new Date(selectedDate));
+        dispatch(addMemoriesOfDateToStore(memories, new Date(selectedDate)));
+      } catch (err) {
+        dispatch(setAlert(err.message, "error"));
+      }
+    };
+    getMemoriesBySelectedDate();
+  }, [dispatch, selectedDate]);
+
+  const getMemories = () => {
+    let cachedMemory = memoriesByDate.find(
+      (obj) => obj.date === new Date(selectedDate).toLocaleDateString()
+    );
+    return cachedMemory ? cachedMemory.memories : [];
+  };
   return (
     <>
       <Box display="flex" justifyContent="center">
         <PrivatePageHeader
           text="Calendar"
           icon={
-            <TodayIcon
-              style={{ fontSize: "30pt", color: COLORS.PRIMARY_PURPLE }}
-            />
+            <TodayIcon className={classes.todayIcon} />
           }
         />
       </Box>
@@ -93,10 +109,9 @@ const MemoriesCalendar = () => {
         </Typography>
       </Box>
       <Box padding={2} marginBottom={7}>
-        {memoriesOfSelectedDate.length > 0 &&
-          memoriesOfSelectedDate.map((memory) => (
-            <MemoryCard memory={memory} key={memory.memoryId} />
-          ))}
+        {getMemories().map((memory) => (
+          <MemoryCard memory={memory} key={memory.memoryId} />
+        ))}
       </Box>
     </>
   );

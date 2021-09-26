@@ -12,7 +12,6 @@ const CustomSnackbar = () => {
   }
 
   const handleClose = (alertId) => {
-    console.log(alertId);
     dispatch(removeAlert(alertId));
   };
 

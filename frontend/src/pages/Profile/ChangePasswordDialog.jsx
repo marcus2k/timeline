@@ -43,7 +43,6 @@ const ChangePasswordDialog = ({
       await userChangePassword(oldPassword, newPassword);
       dispatch(setAlert("Successfully changed password!", "success"));
     } catch (err) {
-      console.log(err.response);
       dispatch(setAlert(err.response.data.error, "error"));
     } finally {
       resetFields();

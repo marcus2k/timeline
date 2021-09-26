@@ -8,8 +8,7 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core";
-import { getLineById, getLineDataById } from "../../services/lines";
-import { getMemoryById } from "../../services/memories";
+import { getLineDataById } from "../../services/lines";
 import MemoryCard from "./MemoryCard";
 import EditIcon from "@material-ui/icons/Edit";
 import LinearScaleIcon from "@material-ui/icons/LinearScale";
@@ -24,6 +23,8 @@ import Loading from "../../components/Loading";
 import LineMap from "./LineMap/LineMap";
 import NoneAvailable from "../../components/NoneAvailable";
 import FadeIn from "react-fade-in/lib/FadeIn";
+import { useDispatch } from "react-redux";
+import { setAlert } from "../../actions/alert";
 
 const useStyles = makeStyles((theme) => ({
   mapButton: {
@@ -40,34 +41,39 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const getLineInfo = (id) => getLineById(id);
-const getMemories = (memoryIds) => memoryIds.map((id) => getMemoryById(id));
-
 const Line = (props) => {
   const classes = useStyles();
   const { lineId } = useParams();
   const history = useHistory();
-  const { title, color, memoryIds } = getLineInfo(lineId);
+  // const { title, color, memoryIds } = getLineInfo(lineId);
   const [displayDeleteDialog, setDisplayDeleteDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   // https://stackoverflow.com/questions/56608065/fix-cant-perform-a-react-state-update-on-an-unmounted-component-error
   const [deleted, setDeleted] = useState(false);
   const [showMap, setShowMap] = useState(false);
+  const [title, setLineTitle] = useState("");
   const [lineMemories, setLineMemories] = useState([]);
   const [lineColor, setLineColor] = useState("");
 
-  const useFakeData = true;
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const getLineMemories = async () => {
-      if (!useFakeData) {
+      setLoading(true);
+      try {
         const lineData = await getLineDataById(lineId);
+        setLineTitle(lineData.name);
         setLineColor(lineData.colorHex);
         setLineMemories(lineData.memories ? lineData.memories : []);
+      } catch(e) {
+        dispatch(setAlert("Failed to retrieve line", "error"));
+        history.push("/");
+      } finally {
+        setLoading(false);
       }
     };
     getLineMemories();
-  }, [lineId, useFakeData]);
+  }, [lineId, dispatch, history]);
 
   useEffect(() => {
     if (deleted) {
@@ -75,9 +81,9 @@ const Line = (props) => {
     }
   }, [deleted, history]);
 
-  const memoriesData = useFakeData ? getMemories(memoryIds) : lineMemories;
+  const memoriesData = lineMemories;
 
-  const lineSize = memoryIds.length;
+  const lineSize = memoriesData.length;
 
   const isFirstMemory = (idx) => idx === 0;
   const isLastMemory = (idx) => idx === lineSize - 1;
@@ -100,7 +106,6 @@ const Line = (props) => {
                   title={showMap ? "Toggle timeline view" : "Toggle map view"}
                 >
                   <Button
-                    // TODO: add lineId as params
                     onClick={() => setShowMap(!showMap)}
                     fullWidth
                     className={classes.mapButton}
@@ -166,29 +171,29 @@ const Line = (props) => {
             </Grid>
           </Grid>
         </Box>
-        {/* TODO: send memories as a prop to LineMap */}
         <FadeIn>
           {showMap ? (
-            <LineMap
-              lineColor={useFakeData ? color : lineColor}
-              lineMemories={memoriesData}
-            />
+            <Box display="flex" justifyContent="center">
+              <LineMap
+                lineColor={lineColor}
+                lineMemories={memoriesData}
+              />
+            </Box>
           ) : (
             <Timeline align="left">
               {memoriesData.length > 0 ? (
-                memoriesData.map((memory, idx) => (
-                  // TODO: change mediaUrl params to get the first image
+                memoriesData.map((memory, idx) => 
                   <MemoryCard
                     isFirst={isFirstMemory(idx)}
                     isLast={isLastMemory(idx)}
                     memoryId={memory.memoryId}
                     key={memory.memoryId}
                     title={memory.title}
-                    mediaUrl={memory.media[0].source.url}
-                    date={memory.date}
-                    color={color}
+                    mediaUrl={memory.thumbnailUrl}
+                    date={memory.creationDate}
+                    color={lineColor}
                   />
-                ))
+                )
               ) : (
                 <NoneAvailable
                   text={"No memories added yet, add your first memory now!"}

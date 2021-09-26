@@ -2,14 +2,15 @@ import { makeStyles } from "@material-ui/core";
 import { Box } from "@mui/system";
 import { useState } from "react";
 import { COLORS } from "../../utils/colors";
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import NotFoundImage from "../../assets/not-found.png";
 
 const vpWidth = Math.max(
   document.documentElement.clientWidth || 0,
   window.innerWidth || 0
 );
 
-const containerWidth = vpWidth;// * 0.9;
+const containerWidth = vpWidth; // * 0.9;
 const IMG_WIDTH = containerWidth;
 // const IMG_HEIGHT = containerWidth;
 
@@ -19,17 +20,21 @@ const useStyles = makeStyles((theme) => ({
     overflowX: "visible",
     transitionProperty: "transform",
     willChange: "transform",
+    width: "100vw",
+    height: "100vw",
   },
   displayImg: {
     objectFit: "contain",
-    textAlign: "center"
+    textAlign: "center",
+    width: "100%",
+    height: "100%",
   },
   main: {
     backgroundColor: "#000",
     overflow: "hidden",
     position: "relative",
-    width: `${IMG_WIDTH}px`,
-    height: `${IMG_WIDTH}px`,
+    width: "100vw",
+    height: "100vw",
   },
   move: {
     display: "flex",
@@ -58,9 +63,8 @@ const useStyles = makeStyles((theme) => ({
   selectedDot: {
     width: "10px",
     color: COLORS.PRIMARY_PURPLE,
-  }
+  },
 }));
-
 
 const HorizontalScrollDots = (props) => {
   const classes = useStyles();
@@ -70,17 +74,26 @@ const HorizontalScrollDots = (props) => {
 
   const getDotClassByIndex = (idx) => {
     return idx === currIndex ? classes.selectedDot : classes.unselectedDot;
-  }
+  };
 
   return (
-    <Box display="flex" flexDirection="row" width="100%" justifyContent="center">
+    <Box
+      display="flex"
+      flexDirection="row"
+      width="100%"
+      justifyContent="center"
+    >
       {templateArray.map((_, idx) => (
-          <FiberManualRecordIcon className={getDotClassByIndex(idx)} />
-        )
-      )}
+        <FiberManualRecordIcon key={idx} className={getDotClassByIndex(idx)} />
+      ))}
     </Box>
-  )
-}
+  );
+};
+
+const getSwiperStyle = (movement, transitionDuration) => ({
+  transform: `translateX(${movement * -1}px)`,
+  transitionDuration: transitionDuration,
+});
 
 const MediaDisplay = (props) => {
   const classes = useStyles();
@@ -103,30 +116,30 @@ const MediaDisplay = (props) => {
     clearTimeout(transitionTimeout);
     const maxLength = mediaUrls.length - 1;
     let nextMovement = movement + delta;
-  
+
     if (nextMovement < 0) {
       nextMovement = 0;
     }
-  
+
     if (nextMovement > maxLength * IMG_WIDTH) {
       nextMovement = maxLength * IMG_WIDTH;
     }
-  
+
     setMovement(nextMovement);
     setTransitionDuration("0s");
   };
 
   const handleTouchStart = (e) => {
     setLastTouch(e.nativeEvent.touches[0].clientX);
-  }
+  };
 
-  const handleTouchMove = e => {
+  const handleTouchMove = (e) => {
     const delta = lastTouch - e.nativeEvent.touches[0].clientX;
     setLastTouch(e.nativeEvent.touches[0].clientX);
     handleMovement(delta);
   };
 
-  const handleMovementEnd = () => {  
+  const handleMovementEnd = () => {
     const endPosition = movement / IMG_WIDTH;
     const endPartial = endPosition % 1;
     const endingIndex = endPosition - endPartial;
@@ -149,9 +162,11 @@ const MediaDisplay = (props) => {
     setCurrIndex(index);
     setMovement(index * IMG_WIDTH);
     setTransitionDuration(`${duration}s`);
-    setTransitionTimeout(setTimeout(() => {
-      setTransitionDuration("0s");
-    }, duration * 100));
+    setTransitionTimeout(
+      setTimeout(() => {
+        setTransitionDuration("0s");
+      }, duration * 100)
+    );
   };
 
   return (
@@ -163,28 +178,30 @@ const MediaDisplay = (props) => {
         onTouchEnd={handleTouchEnd}
         onWheel={handleWheel}
       >
-        <div 
+        <div
           className={classes.swiper}
-          style={{
-            transform: `translateX(${movement * -1}px)`,
-            transitionDuration: transitionDuration,
-          }}
+          style={getSwiperStyle(movement, transitionDuration)}
         >
           {mediaUrls.map((media, idx) => {
             const src = media.url;
-            if (!src) {
-              return null;
-            }
-            return (<img alt="memory media" key={idx} src={src} width="100%" height="100%" />);
+            return (
+              <img
+                alt="memory media"
+                key={idx}
+                src={src}
+                className={classes.displayImg}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = NotFoundImage;
+                }}
+              />
+            );
           })}
         </div>
       </div>
-      <HorizontalScrollDots 
-        currIndex={currIndex} 
-        numDots={mediaUrls.length} 
-      />
+      <HorizontalScrollDots currIndex={currIndex} numDots={mediaUrls.length} />
     </Box>
-  )
-}
+  );
+};
 
 export default MediaDisplay;

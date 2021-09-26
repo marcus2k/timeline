@@ -11,7 +11,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import LinearScaleIcon from "@material-ui/icons/LinearScale";
 import { GithubPicker } from "react-color";
 import { colorPickerArray, COLORS } from "../../utils/colors";
-import EditIcon from "@material-ui/icons/Edit";
+import SaveIcon from "@material-ui/icons/Save";
 import { useDispatch } from "react-redux";
 import { setAlert } from "../../actions/alert";
 import { editLineById, getLineDataById } from "../../services/lines";
@@ -35,7 +35,15 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: COLORS.RED,
     color: COLORS.WHITE,
   },
+  linearScaleIcon: {
+    fontSize: "30pt", 
+    color: COLORS.PRIMARY_PURPLE
+  },
 }));
+
+const getColoredLineStyle = (color) => ({
+  border: `5px solid ${color}`,
+});
 
 const EditLine = () => {
   const classes = useStyles();
@@ -67,6 +75,7 @@ const EditLine = () => {
       history.push(`/line/${lineId}`);
     } catch (err) {
       dispatch(setAlert(err.message, "error"));
+      history.push("/");
     } finally {
       setLoading(false);
     }
@@ -84,9 +93,7 @@ const EditLine = () => {
             <PrivatePageHeader
               text={"Edit your line"}
               icon={
-                <LinearScaleIcon
-                  style={{ fontSize: "30pt", color: COLORS.PRIMARY_PURPLE }}
-                />
+                <LinearScaleIcon className={classes.linearScaleIcon}/>
               }
             />
             <TextField
@@ -102,11 +109,7 @@ const EditLine = () => {
             />
             <Grid item xs={12} className={classes.selectColorContainer}>
               <Typography variant="h4">Choose your new line color</Typography>
-              <hr
-                style={{
-                  border: `5px solid ${selectedColor}`,
-                }}
-              />
+              <hr style={getColoredLineStyle(selectedColor)} />
               {/* https://casesandberg.github.io/react-color/ */}
               <GithubPicker
                 color={selectedColor}
@@ -120,23 +123,23 @@ const EditLine = () => {
               <Box paddingY={1}>
                 <Button
                   fullWidth
+                  color="primary"
+                  variant="contained"
+                  startIcon={<SaveIcon />}
+                  onClick={editLine}
+                >
+                  Save Changes
+                </Button>
+              </Box>
+              <Box paddingY={1}>
+                <Button
+                  fullWidth
                   className={classes.cancelButton}
                   variant="contained"
                   startIcon={<CloseIcon />}
                   onClick={() => history.push(`/line/${lineId}`)}
                 >
                   Cancel
-                </Button>
-              </Box>
-              <Box paddingY={1}>
-                <Button
-                  fullWidth
-                  color="primary"
-                  variant="contained"
-                  startIcon={<EditIcon />}
-                  onClick={editLine}
-                >
-                  Edit Line
                 </Button>
               </Box>
             </Grid>

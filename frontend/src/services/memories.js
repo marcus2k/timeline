@@ -1,34 +1,67 @@
-// import server from "../utils/server"
+import server from "../utils/server";
 
-const mockMemoryData = {
-  memoryId: 4,
-  date: "19 May 2021",
-  title: "Mock Memory Title",
-  description: "This is a mock card description. This is a mock card description. This is a mock card description. This is a mock card description. This is a mock card description.",
-  media: [
-    {
-      type: "IMAGE",
-      source: {
-        url: "https://images.megapixl.com/2485/24853666.jpg"
-      },
-    }
-  ],
-  latitude: 1.359237,
-  longitude: 103.98934,
+const blobToFile = (blob, fileName="default-name", type="image/png") => {
+  const file = new File([blob], fileName, { type });
+  return file
 }
 
-// returns memory data
-export const getMemoryById = (id) => {
+const convertCoordinatesToString = (memory) => {
   return {
-    ...mockMemoryData,
-    memoryId: id,
-    mediaUrls: mockMemoryData.media.map((m, idx) => ({ url: m.source.url, position: idx }))
+    ...memory,
+    latitude: memory.latitude.toString(),
+    longitude: memory.longitude.toString(),
   }
 }
 
-// TODO: connect with backend
-export const deleteMemoryById = async (id) => {
-  console.log('deleted');
-  // const res = await server.delete(`${id}`);
-  // return res.data
+const convertCoordinatesToFloat = (memory) => {
+  return {
+    ...memory,
+    latitude: parseFloat(memory.latitude),
+    longitude: parseFloat(memory.longitude),
+  }
+}
+
+export const getMemoryById = async (memoryId) => {
+  const res = await server.get(`memories/${memoryId}`);
+  const memory = res.data.memory
+  return convertCoordinatesToFloat(memory);
+}
+
+export const createNewMemory = async (title, lineId, description, latitude, longitude, mediaUrls) => {
+  const body = new FormData(); 
+  body.append("title", title);
+  body.append("line", lineId);
+  body.append("description", description);
+  body.append("latitude", latitude); // will be automatically be string (text)
+  body.append("longitude", longitude); // will be automatically be string (text)
+
+  const loadImageFile = async (url, idx) => {
+    const filename = `im-${idx}`;
+    await fetch(url)
+      .then(res => res.blob())
+      .then(blob => blobToFile(blob, filename))
+      .then(file => body.append("images", file));
+  };
+
+  for (let idx = 0; idx < mediaUrls.length; idx++) {
+    const url = mediaUrls[idx].url;
+    await loadImageFile(url, idx);
+  }
+
+  const res = await server.post(`memories`, body);
+  return convertCoordinatesToFloat(res.data.memory);
+}
+
+export const editMemoryDetailsById = async (memoryId, title, description, line, longitude, latitude) => {
+  const memoryData = {
+    title, description, line, longitude, latitude, 
+  };
+  const body = convertCoordinatesToString(memoryData);
+  const res = await server.patch(`memories/${memoryId}`, body);
+  return convertCoordinatesToFloat(res.data.memory);
+}
+
+export const deleteMemoryById = async (memoryId) => {
+  const res = await server.delete(`memories/${memoryId}`);
+  return convertCoordinatesToFloat(res.data.memory);
 }

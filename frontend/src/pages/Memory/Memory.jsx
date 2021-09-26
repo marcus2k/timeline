@@ -4,6 +4,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useParams } from "react-router";
 import { getMemoryById } from "../../services/memories";
+import { convertUTCtoLocalDisplay } from "../../utils/datetime";
 import { COLORS } from "../../utils/colors";
 import { useState } from "react";
 import Loading from "../../components/Loading";
@@ -17,6 +18,9 @@ import PrivatePageHeader from "../../components/layout/PrivatePageHeader";
 import MediaDisplay from "./MediaDisplay";
 import FadeIn from "react-fade-in/lib/FadeIn";
 import { Typography } from "@mui/material";
+import { getGeographicFeature } from "../../services/locationService";
+import { useDispatch } from "react-redux";
+import { setAlert } from "../../actions/alert";
 
 const useStyles = makeStyles((theme) => ({
   alignCenter: {
@@ -50,26 +54,66 @@ const Memory = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const { memoryId } = useParams();
-  const { title, description, mediaUrls: existingMediaUrls, date, lineId } = getMemoryById(memoryId);
+
+  const [title, setTitle] = useState("");
+  const [lineId, setLineId] = useState("");
+  const [description, setDescription] = useState("");
+  const [creationDate, setCreationDate] = useState("");
+  const [location, setLocation] = useState("");
+  const [mediaUrls, setMediaUrls] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [displayDeleteDialog, setDisplayDeleteDialog] = useState(false);
   const [deleted, setDeleted] = useState(false);
-  const [mediaUrls, setMediaUrls] = useState(existingMediaUrls);
-  const [isEditView, setIsEditView] = useState(false);
+  const [isMediaEditView, setIsMediaEditView] = useState(false);
 
   useEffect(() => {
     if (deleted) {
-      history.push(`line/${lineId}`);
+      history.push(`/line/${lineId}`);
     }
   }, [deleted, history, lineId]);
 
-  // do a useEffect to get the memory after endpoint to get a memory is done
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (deleted) {
+      return;
+    }
+    const getMemoryDetails = async () => {
+      setLoading(true);
+      try {
+        const memoryData = await getMemoryById(memoryId);
+        const {
+          title,
+          description,
+          creationDate,
+          lineId,
+          latitude,
+          longitude,
+          media: mediaUrls,
+        } = memoryData;
+        const location = await getGeographicFeature(latitude, longitude);
+        setLocation(location);
+        setTitle(title);
+        setDescription(description);
+        setCreationDate(creationDate);
+        setLineId(lineId);
+        setMediaUrls(mediaUrls);
+      } catch (e) {
+        dispatch(setAlert("Unable to load memory details.", "error"));
+        history.push("/");
+      } finally {
+        // states already loaded
+        setLoading(false);
+      }
+    };
+    getMemoryDetails();
+  }, [memoryId, dispatch, deleted, history]);
 
   if (loading) {
     return <Loading />;
   }
 
-  if (isEditView) {
+  if (isMediaEditView) {
     // because states are essentially shared
     return (
       <>
@@ -77,9 +121,10 @@ const Memory = (props) => {
           <Grid container className={classes.memoryContainer}>
             <Grid item xs={12}>
               <Box paddingY={1}>
-                <UploadMediaForm 
-                  existingMediaUrls={mediaUrls} 
-                  onComplete={setMediaUrls} 
+                <UploadMediaForm
+                  memoryId={memoryId}
+                  existingMediaUrls={mediaUrls}
+                  onComplete={setMediaUrls}
                 />
               </Box>
               <Box paddingY={1}>
@@ -87,7 +132,7 @@ const Memory = (props) => {
                   fullWidth
                   color="primary"
                   variant="contained"
-                  onClick={() => setIsEditView(!isEditView)}
+                  onClick={() => setIsMediaEditView(!isMediaEditView)}
                 >
                   Back to Memory
                 </Button>
@@ -96,25 +141,37 @@ const Memory = (props) => {
           </Grid>
         </div>
       </>
-    )
+    );
   }
 
   return (
     <>
       <FadeIn>
         <Box paddingBottom={7}>
-          <Box >
+          <Box>
             <Box display="flex" justifyContent="center" paddingTop={2}>
               <PrivatePageHeader text={title} />
             </Box>
-            <Box display="flex" justifyContent="center" marginBottom={3}>
-              <MediaDisplay mediaUrls={mediaUrls} />
-            </Box>
+            {mediaUrls.length > 0 && (
+              <Box display="flex" justifyContent="center" marginBottom={3}>
+                <MediaDisplay mediaUrls={mediaUrls} />
+              </Box>
+            )}
             <Box className={classes.descriptionStyle} marginBottom={3}>
-              <Typography variant="body2">Memory Added on <strong>{date}</strong></Typography>
+              <Typography variant="body1">
+                Memory Added on{" "}
+                <strong>{convertUTCtoLocalDisplay(creationDate)}</strong>
+              </Typography>
             </Box>
+            {location && location.place_name && (
+              <Box className={classes.descriptionStyle} marginBottom={3}>
+                <Typography variant="body1">
+                  Location: <strong>{location.place_name}</strong>
+                </Typography>
+              </Box>
+            )}
             <Box className={classes.descriptionStyle}>
-              <Typography variant="body2">{description}</Typography>
+              <Typography variant="body1">{description}</Typography>
             </Box>
           </Box>
         </Box>
@@ -139,7 +196,7 @@ const Memory = (props) => {
               <Box paddingX={0.5}>
                 <Button
                   onClick={() => {
-                    setIsEditView(!isEditView)
+                    setIsMediaEditView(!isMediaEditView);
                   }}
                   fullWidth
                   className={classes.editMediaButton}
@@ -168,7 +225,7 @@ const Memory = (props) => {
           </Grid>
           <Grid container>
             <Grid item xs={12}>
-              <Box paddingX={0.5} paddingY={5}>
+              <Box paddingX={0.5} paddingBottom={8} paddingTop={4}>
                 <Button
                   fullWidth
                   color="primary"

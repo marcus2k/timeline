@@ -3,13 +3,21 @@ import { useState } from "react";
 import ReactMapGL, { Marker, Popup } from "react-map-gl";
 import mapboxgl from "mapbox-gl"; // This is a dependency of react-map-gl even if you didn't explicitly install it
 import LocationOn from "@material-ui/icons/LocationOn";
-import { IconButton, Typography } from "@material-ui/core";
+import { IconButton, makeStyles, Typography } from "@material-ui/core";
+import { COLORS } from "../../utils/colors";
 
 mapboxgl.workerClass =
   // eslint-disable-next-line import/no-webpack-loader-syntax
   require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
 
-const MapDisplay = ({ selectedLocation, viewport, setViewport }) => {
+const useStyles = makeStyles(() => ({
+  locationIcon: {
+    color: COLORS.RED,
+  },
+}));
+
+const MapDisplay = ({ selectedLocation, viewport }) => {
+  const classes = useStyles();
   const [showPopup, setShowPopup] = useState(false);
 
   return (
@@ -18,9 +26,9 @@ const MapDisplay = ({ selectedLocation, viewport, setViewport }) => {
         {...viewport}
         mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_KEY}
         mapStyle="mapbox://styles/mapbox/streets-v10"
-        // everytime user drag/zoom, will cause map to re-render
-        // onViewportChange={(viewport) => renderViewport(viewport)}
-        onViewportChange={(v) => setViewport(v)}
+        scrollZoom={false}
+        dragPan={false}
+        dragRotate={false}
       >
         {selectedLocation && (
           <Marker
@@ -31,7 +39,7 @@ const MapDisplay = ({ selectedLocation, viewport, setViewport }) => {
             offsetLeft={-24}
           >
             <IconButton onClick={() => setShowPopup(true)}>
-              <LocationOn />
+              <LocationOn className={classes.locationIcon} />
             </IconButton>
           </Marker>
         )}

@@ -8,21 +8,21 @@ import AppLogo from "./layout/AppLogo";
 
 const useStyles = makeStyles(() => ({
   top: {
-    height: "35%",
+    height: "33%",
     width: "auto",
     position: "fixed",
     top: 0,
     "@media (max-width: 480px)": {
-      height: "35%",
+      height: "25%",
     },
   },
   bottom: {
-    height: "28%",
+    height: "33%",
     width: "auto",
     position: "fixed",
     bottom: 0,
     "@media (max-width: 480px)": {
-      height: "20%",
+      height: "25%",
     },
   },
   loaderContainer: {

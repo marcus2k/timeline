@@ -66,7 +66,7 @@ const Landing = () => {
           <AppLogo />
           <Box className={classes.subContent}>
             <Typography variant="h5" align="center">
-              An app to save your memories with your closed ones.
+              An app built to save your memories with your closed ones.
             </Typography>
           </Box>
           <Button
@@ -87,12 +87,9 @@ const Landing = () => {
                   src={aroundTheWorldImage}
                   alt="around the world"
                 />
-                <h2 className={classes.featureHeader}>Feature 1</h2>
-                <Typography variant="h6" align="center">
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                  Repudiandae iusto unde quibusdam, iste dolorem consequuntur
-                  enim
-                </Typography>
+                <h2 className={classes.featureHeader}>
+                  Save your memories on a map
+                </h2>
               </Grid>
 
               <Grid item xs={12}>
@@ -103,12 +100,9 @@ const Landing = () => {
                     alt="moments"
                   />
                 </div>
-                <h2 className={classes.featureHeader}>Feature 2</h2>
-                <Typography variant="h6" align="center">
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                  Repudiandae iusto unde quibusdam, iste dolorem consequuntur
-                  enim
-                </Typography>
+                <h2 className={classes.featureHeader}>
+                  Look back at your precious moments through a timeline
+                </h2>
               </Grid>
 
               <Grid item xs={12}>
@@ -119,12 +113,9 @@ const Landing = () => {
                     alt="friendship"
                   />
                 </div>
-                <h2 className={classes.featureHeader}>Feature 3</h2>
-                <Typography variant="h6" align="center">
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                  Repudiandae iusto unde quibusdam, iste dolorem consequuntur
-                  enim
-                </Typography>
+                <h2 className={classes.featureHeader}>
+                  Group your memories with different groups of people
+                </h2>
               </Grid>
             </Grid>
           </div>

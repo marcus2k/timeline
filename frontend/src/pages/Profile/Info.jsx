@@ -56,22 +56,6 @@ const Info = () => {
             <ListItemText primary="Logout" />
           </ListItem>
           <Divider />
-          <Box padding={2}>
-            <Typography variant="h4">Info</Typography>
-          </Box>
-          <Divider />
-          <ListItem button>
-            <ListItemText primary="Adding a memory" />
-          </ListItem>
-          <Divider />
-          <ListItem button>
-            <ListItemText primary="Editing a memory" />
-          </ListItem>
-          <Divider />
-          <ListItem button>
-            <ListItemText primary="Map view of your memories" />
-          </ListItem>
-          <Divider />
         </List>
         <DeleteProfileDialog
           displayDeleteDialog={displayDeleteDialog}

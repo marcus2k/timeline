@@ -32,6 +32,10 @@ const useStyles = makeStyles((theme) => ({
   textFieldContainer: {
     padding: theme.spacing(1, 0, 1, 0),
   },
+  homeIcon: {
+    fontSize: "30pt", 
+    color: COLORS.PRIMARY_PURPLE
+  },
 }));
 
 const Home = () => {
@@ -72,16 +76,13 @@ const Home = () => {
   return (
     <Fragment>
       <div className={classes.root}>
-        {/* TODO: Add some info on how to use the app if there are no lines at first */}
         <Grid container className={classes.linesContainer}>
           <Grid item xs={12} className={classes.addLineButtonContainer}>
             <PrivatePageHeader
               text={"Home"}
               icon={
                 <Tooltip title="Add/ find lines to create your memory!">
-                  <HomeIcon
-                    style={{ fontSize: "30pt", color: COLORS.PRIMARY_PURPLE }}
-                  />
+                  <HomeIcon className={classes.homeIcon} />
                 </Tooltip>
               }
             />

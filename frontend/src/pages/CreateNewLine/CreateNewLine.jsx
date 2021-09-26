@@ -1,11 +1,11 @@
 import {
   Button,
   Grid,
-  makeStyles,
   TextField,
   Tooltip,
   Typography,
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React, { Fragment, useState } from "react";
 import AddIcon from "@material-ui/icons/Add";
 import LinearScaleIcon from "@material-ui/icons/LinearScale";
@@ -32,7 +32,18 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     width: "100%",
   },
+  linearScaleIcon: {
+    fontSize: "30pt", 
+    color: COLORS.PRIMARY_PURPLE
+  },
+  chooseColorInstruction: {
+    color: COLORS.BLACK,
+  },
 }));
+
+const getColoredLineStyle = (color) => ({
+  border: `5px solid ${color}`,
+});
 
 const CreateNewLine = () => {
   const classes = useStyles();
@@ -65,7 +76,7 @@ const CreateNewLine = () => {
 
   return (
     <Fragment>
-      <Grid container spacing={3}>
+      <Grid container>
         <Grid item xs={12}>
           <div className={classes.container}>
             <PrivatePageHeader
@@ -73,7 +84,7 @@ const CreateNewLine = () => {
               icon={
                 <Tooltip title="Create a line to add memories to it!">
                   <LinearScaleIcon
-                    style={{ fontSize: "30pt", color: COLORS.PRIMARY_PURPLE }}
+                    className={classes.linearScaleIcon}
                   />
                 </Tooltip>
               }
@@ -91,14 +102,10 @@ const CreateNewLine = () => {
               {lineTitle}
             </TextField>
             <Grid item xs={12} className={classes.selectColorContainer}>
-              <Typography variant="h4" style={{ color: COLORS.BLACK }}>
+              <Typography variant="h4" className={classes.chooseColorInstruction}>
                 Choose your line color
               </Typography>
-              <hr
-                style={{
-                  border: `5px solid ${selectedColor}`,
-                }}
-              />
+              <hr style={getColoredLineStyle(selectedColor)} />
               {/* https://casesandberg.github.io/react-color/ */}
               <GithubPicker
                 color={selectedColor}

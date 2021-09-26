@@ -31,7 +31,6 @@ const DeleteProfileDialog = ({
 
   const deleteAccount = async () => {
     try {
-      console.log("delete account button clicked");
       setLoading(true);
       dispatch(deleteUserAccount());
     } catch (err) {

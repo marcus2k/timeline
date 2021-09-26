@@ -8,14 +8,10 @@ import {
 } from "../utils/colors";
 
 const theme = createTheme({
-  // TODO: UPDATE THIS PALETTE
   palette: {
     primary: {
       main: COLORS.PRIMARY_PURPLE
     },
-    // secondary: {
-    // main: '#fff',
-    // }
   },
   typography: {
     fontFamily: 'Lato',

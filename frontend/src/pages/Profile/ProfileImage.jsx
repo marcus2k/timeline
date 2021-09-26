@@ -55,18 +55,7 @@ const ProfileImage = () => {
               />
             </Badge>
           ) : (
-            <Badge
-              overlap="circular"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              badgeContent={
-                <IconButton>
-                  <EditIcon className={classes.iconStyle} />
-                </IconButton>
-              }
-            >
-              {/* <Avatar className={classes.sizeAvatar} /> */}
-              <Avatar name={user.name} round={true} />
-            </Badge>
+            <Avatar name={user.name} round={true} />
           )}
         </Box>
       </Box>

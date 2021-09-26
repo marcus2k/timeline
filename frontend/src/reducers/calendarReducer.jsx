@@ -1,4 +1,5 @@
 import {
+  ADD_MEMORIES_OF_SELECTED_DATE,
   GET_DATES_WITH_MEMORIES,
   SET_SELECTED_DATE,
 } from "../action-types/calendar";
@@ -6,6 +7,7 @@ import {
 const initialState = {
   selectedDate: new Date(),
   markedDates: [],
+  memoriesByDate: [],
 };
 
 const calendarReducer = (state = initialState, action) => {
@@ -22,6 +24,14 @@ const calendarReducer = (state = initialState, action) => {
       return {
         ...state,
         selectedDate: payload,
+      };
+    case ADD_MEMORIES_OF_SELECTED_DATE:
+      const cloned = [...state.memoriesByDate];
+      const filtered = cloned.filter((obj) => obj.date !== payload.date);
+      filtered.push(payload);
+      return {
+        ...state,
+        memoriesByDate: [...filtered],
       };
     default:
       return state;

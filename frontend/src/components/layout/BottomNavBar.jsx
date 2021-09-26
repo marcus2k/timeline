@@ -34,7 +34,6 @@ const BottomNavBar = () => {
         onClick={() => history.push("/")}
         icon={<HomeIcon />}
       />
-      {/* TODO: create a how to use page */}
       <BottomNavigationAction
         component="button"
         onClick={() => history.push("/calendar")}

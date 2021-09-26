@@ -76,9 +76,11 @@ export const loginWithGoogle = (googleData) => async (dispatch) => {
   const body = {
     token: googleData.tokenId,
   };
+  if (!googleData.tokenId) {
+    return;
+  }
   try {
     const res = await server.post("auth/login/google", body);
-    console.log(res.data);
     dispatch({
       type: LOGIN_SUCCESS,
       payload: res.data,
@@ -129,10 +131,10 @@ export const loadUser = () => async (dispatch) => {
 
   try {
     // this one bascially only job is to get the user.
-    const res = await server.get("auth");
+    const res = await server.get("/users");
     dispatch({
       type: USER_LOADED,
-      payload: res.data,
+      payload: res.data.user,
     });
   } catch (err) {
     dispatch({
@@ -150,10 +152,7 @@ export const logout = () => async (dispatch) => {
 
 export const deleteUserAccount = () => async (dispatch) => {
   try {
-    // TODO: connect to backend
-    // const res = await server.delete('/auth/userId)
-    const res = await server.delete("/users/delete");
-    console.log("res from delete acc", res);
+    await server.delete("/users");
     dispatch(logout());
     dispatch(setAlert("Account successfully deleted", "success"));
     logEvent(googleAnalytics, "user_deleted_account");
@@ -167,7 +166,7 @@ export const userChangeName = (newName) => async (dispatch) => {
     const body = {
       name: newName.trim(),
     };
-    const res = await server.patch("/users/profile", body);
+    const res = await server.patch("/users", body);
     const updatedUser = res.data.user;
     dispatch({
       type: CHANGE_NAME,

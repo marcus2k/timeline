@@ -33,8 +33,7 @@ const DeleteMediaDialog = ({
   const deleteMedia = async () => {
     try {
       setLoading(true);
-      // TODO: Delete the memory, this one is just on frontend
-      deleteMediaByPosition(mediaPosition);
+      await deleteMediaByPosition(mediaPosition);
       dispatch(setAlert("Successfully deleted photo", "success"));
     } catch (err) {
       dispatch(setAlert(err.message, "error"));
@@ -55,7 +54,7 @@ const DeleteMediaDialog = ({
           aria-describedby="alert-dialog-slide-description"
         >
           <DialogTitle id="alert-dialog-slide-title">
-            Are you sure you want to delete this photo
+            Are you sure you want to delete this photo?
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-slide-description">

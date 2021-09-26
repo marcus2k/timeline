@@ -167,9 +167,8 @@ const SignIn = () => {
                     clientId={GOOGLE_API_TOKEN}
                     buttonText="SIGN IN WITH GOOGLE"
                     onSuccess={loginUserWithGoogle}
-                    onFailure={loginUserWithGoogle} // TODO: change so that it just stays at the login page with some message
+                    onFailure={loginUserWithGoogle}
                     cookiePolicy={"single_host_origin"}
-                    className="" // TODO: Style
                   />
                   <br />
                   <FacebookLogin

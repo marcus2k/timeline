@@ -28,12 +28,12 @@ export const COLORS = {
   LIGHT_DARK_BLUE: "#bed3f3",
   LIGHT_PURPLE: "#d4c4fb",
   WHITE: '#fffFFF',
-  PRIMARY_PURPLE: '#756Dff',
+  PRIMARY_PURPLE: '#756dff',
   CANCEL_BUTTON: '#c70000',
   SUCCESS_BUTTON: '#42ba96',
   BLACK: '#000000',
   TRANSPARENT: '#00000000',
-  TRANSLUCENT: "rgba(255, 255, 255, 0.5)", // is it same as "#ffffff80" ?
+  TRANSLUCENT: "rgba(255, 255, 255, 0.5)", 
 }
 
 export const colorPickerArray = [

@@ -6,8 +6,7 @@ export const userChangePassword = async (oldPassword, newPassword) => {
       oldPassword,
       newPassword,
     }
-    const res = await server.post('/users/changepassword', body);
-    console.log(res);
+    await server.post('/users/changepassword', body);
   } catch (err) {
     throw err;
   }

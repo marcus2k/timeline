@@ -21,7 +21,6 @@ export const getLines = () => async (dispatch) => {
       payload: linesByUser,
     });
   } catch (err) {
-    console.log(err.message);
   } finally {
     dispatch({
       type: GET_LINES_OFFLINE,

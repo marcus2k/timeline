@@ -1,11 +1,21 @@
 /* eslint-disable no-use-before-define */
 import React, { useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
+import { makeStyles } from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useState } from "react";
-import { CircularProgress, Typography } from "@material-ui/core";
+import { CircularProgress } from "@material-ui/core";
 import { getLocationSuggestions } from "../../services/locationService";
 import useDebounce from "../../hooks/useDebounce";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router";
+import { setAlert } from "../../actions/alert";
+
+const useStyles = makeStyles((theme) => ({
+  autocomplete: {
+    width: "100%",
+  }
+}));
 
 export const ComboBox = ({
   currentLocation,
@@ -13,22 +23,27 @@ export const ComboBox = ({
   setSelectedLocation,
   viewport,
   setViewport,
+  lineId,
 }) => {
+  const classes = useStyles();
   const [predictions, setPredictions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
+  const dispatch = useDispatch();
+  const history = useHistory();
+
   useEffect(
     () => {
       const getSearchResults = async (newSearchValue) => {
         try {
-          const res = await getLocationSuggestions(
+          const suggestionsFromSearch = await getLocationSuggestions(
             newSearchValue,
             currentLocation.longitude,
             currentLocation.latitude
           );
-          const suggestions = res.suggestions.map((location) => {
+          const suggestions = suggestionsFromSearch.map((location) => {
             return {
               place_name: location.place_name,
               geometry: location.geometry,
@@ -36,7 +51,8 @@ export const ComboBox = ({
           });
           return suggestions;
         } catch (err) {
-          console.log(err.message);
+          dispatch(setAlert(err.message, "error"));
+          history.push("/");
         } finally {
         }
       };
@@ -52,12 +68,17 @@ export const ComboBox = ({
         setIsSearching(false);
       }
     },
-    [currentLocation, debouncedSearchTerm] // Only call effect if debounced search term changes
+    [currentLocation, debouncedSearchTerm, dispatch, history, lineId] // Only call effect if debounced search term changes
   );
 
   const handleChangeLocation = (event, value) => {
     setSelectedLocation(value); // selected location object
     if (value !== null) {
+      setSelectedLocation({
+        ...value,
+        latitude: value.geometry.coordinates[1],
+        longitude: value.geometry.coordinates[0],
+      });
       setViewport({
         ...viewport,
         latitude: value.geometry.coordinates[1],
@@ -81,8 +102,8 @@ export const ComboBox = ({
         getOptionLabel={(option) => option.place_name}
         getOptionSelected={(option, value) => (option.id = value.place_name)}
         onChange={handleChangeLocation}
-        style={{ width: "100%" }}
         value={selectedLocation}
+        className={classes.autocomplete}
         onInputChange={handleInputChange}
         renderInput={(params) => (
           <TextField
@@ -101,17 +122,6 @@ export const ComboBox = ({
           />
         )}
       />
-      {/* just to show that it works */}
-      <Typography variant="body1">for testing</Typography>
-      <Typography variant="body1">
-        place_name: {selectedLocation && selectedLocation.place_name}
-      </Typography>
-      <Typography variant="body1">
-        coordinates:{" "}
-        {selectedLocation &&
-          `longitude: ${selectedLocation.geometry.coordinates[0]}, latitude: 
-         ${selectedLocation.geometry.coordinates[1]}`}
-      </Typography>
     </>
   );
 };
