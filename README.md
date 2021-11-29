@@ -2,17 +2,19 @@
 
 # Timeline
 
-**CS3216 Assignment 3**
+**CS3216 Assignment 3**   
+Try it out at [cs3216-timeline.netlify.app](https://cs3216-timeline.netlify.app)!
 
 <p align="center">
   <img src="frontend/public/logo512.png" alt="Timeline logo" width="192" height="192" />
 </p>
 
-### The place to save your best moments, milestones, and memories.
+### The place to save your best moments, milestones, and memories.  
 
-## Try it out here
+## Docs
 
-https://cs3216-timeline.netlify.app/
+* [Final Report](docs/group-10-milestones.pdf)
+* [Marketing Pitch](docs/group-10-pitch.pdf)
 
 ## Created by
 
